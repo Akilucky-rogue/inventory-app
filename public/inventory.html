@@ -3,79 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventory Manager</title>
+  <title>InventoryPro — Manage Inventory</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="https://img.icons8.com/3d-fluency/94/box.png" />
 </head>
+
 <body>
+  <!-- ================= NAVBAR ================= -->
   <header class="navbar">
     <div class="logo">📦 InventoryPro</div>
     <nav>
       <a href="index.html" class="nav-link">Dashboard</a>
       <a href="inventory.html" class="nav-link active">Manage</a>
     </nav>
-    <button class="theme-toggle" id="themeToggle">🌙</button>
+    <button id="themeToggle" class="theme-toggle">🌙</button>
   </header>
 
-<div id="addItemModal" class="modal">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h2 id="modalTitle">🪄 Add Item</h2>
-      <button id="closeModalBtn" class="close-btn">×</button>
-    </div>
-
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Item Name</label>
-        <input type="text" id="itemName" placeholder="e.g. Nike Shoes" />
+  <!-- ================= ADD / EDIT ITEM MODAL ================= -->
+  <div id="addItemModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🪄 Add / Edit Item</h2>
+        <button id="closeModalBtn" class="close-btn">×</button>
       </div>
 
-      <div class="form-inline two">
+      <div class="modal-body">
         <div class="form-group">
-          <label>Category</label>
-          <input type="text" id="itemCategory" placeholder="e.g. Footwear" />
+          <label>Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. Nike Shoes" />
         </div>
-        <div class="form-group">
-          <label>Subcategory</label>
-          <input type="text" id="itemSubcategory" placeholder="e.g. Sports" />
+
+        <div class="form-inline">
+          <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="itemCategory" placeholder="e.g. Footwear" />
+          </div>
+          <div class="form-group">
+            <label>Subcategory</label>
+            <input type="text" id="itemSubcategory" placeholder="e.g. Sports" />
+          </div>
+        </div>
+
+        <div class="form-inline">
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="itemQuantity" placeholder="e.g. 20" />
+          </div>
+          <div class="form-group">
+            <label>Buy Price (₹)</label>
+            <input type="number" id="itemBuyPrice" placeholder="e.g. 1500" />
+          </div>
+          <div class="form-group">
+            <label>Sell Price (₹)</label>
+            <input type="number" id="itemSellPrice" placeholder="e.g. 2500" />
+          </div>
         </div>
       </div>
 
-      <div class="form-inline three">
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" id="itemQuantity" placeholder="e.g. 20" />
-        </div>
-        <div class="form-group">
-          <label>Buy Price (₹)</label>
-          <input type="number" id="itemBuyPrice" placeholder="e.g. 1500" />
-        </div>
-        <div class="form-group">
-          <label>Sell Price (₹)</label>
-          <input type="number" id="itemSellPrice" placeholder="e.g. 2500" />
-        </div>
+      <div class="modal-footer">
+        <button id="saveItemBtn" class="button save-btn">Save Item</button>
+        <button id="cancelBtn" class="cancel-btn">Cancel</button>
       </div>
-    </div>
-
-    <div class="modal-footer">
-      <button id="saveItemBtn" class="button save-btn">Save Item</button>
-      <button id="cancelBtn" class="cancel-btn">Cancel</button>
     </div>
   </div>
-</div>
 
-
-
-  <!-- Controls -->
+  <!-- ================= CONTROLS BAR ================= -->
   <div class="controls-bar">
-    <input type="text" id="searchInput" placeholder="🔍 Search by name..." />
+    <input type="text" id="searchInput" placeholder="🔍 Search by name, category, or subcategory..." />
+    
     <select id="sortSelect">
-      <option value="name">Sort by Name</option>
+      <option value="name">Sort by Name (A–Z)</option>
       <option value="quantity">Sort by Quantity</option>
-      <option value="margin">Sort by Profit Margin</option>
+      <option value="price">Sort by Price</option>
     </select>
+
     <select id="filterSelect">
       <option value="all">All Categories</option>
     </select>
+
     <button id="clearFiltersBtn" class="button clear-btn">🧹 Clear</button>
 
     <div class="actions">
@@ -86,8 +91,9 @@
     </div>
   </div>
 
+  <!-- ================= INVENTORY TABLE ================= -->
   <div class="table-wrapper">
-    <table>
+    <table id="inventoryTable">
       <thead>
         <tr>
           <th>Name</th>
@@ -100,14 +106,16 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="inventoryTableBody"></tbody>
+      <tbody></tbody>
     </table>
   </div>
 
+  <!-- ================= FOOTER ================= -->
   <footer>
-    <p>© 2025 InventoryPro | Built by Akshat 💻</p>
+    <p>© 2025 InventoryPro | Built by <strong>Akshat 💻</strong></p>
   </footer>
 
+  <!-- ================= SCRIPTS ================= -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
