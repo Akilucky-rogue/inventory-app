@@ -1,11 +1,11 @@
-/* ================== GLOBAL STYLES ================== */
+/* ================== GLOBAL ================== */
 :root {
   --primary: #4e73df;
   --primary-dark: #2e59d9;
   --background: #f4f6f9;
   --text: #333;
   --card-bg: #fff;
-  --border-radius: 10px;
+  --border-radius: 12px;
   --transition: 0.3s ease;
 }
 
@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   margin: 0;
   background: var(--background);
   color: var(--text);
@@ -30,15 +30,15 @@ body {
   justify-content: space-between;
   align-items: center;
   background: var(--primary);
-  padding: 15px 25px;
   color: white;
-  flex-wrap: wrap;
+  padding: 14px 25px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
 }
 
 .logo {
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 }
 
 .navbar nav {
@@ -61,9 +61,9 @@ body {
 .theme-toggle {
   background: transparent;
   border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
   color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
 }
 
 /* ================== CONTROLS BAR ================== */
@@ -71,14 +71,13 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
   justify-content: space-between;
   background: var(--card-bg);
-  padding: 12px 15px;
-  margin: 20px auto;
   border-radius: var(--border-radius);
+  padding: 10px 15px;
+  margin: 20px auto;
   width: 95%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .controls-bar input,
@@ -98,6 +97,12 @@ body {
   box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
 }
 
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .button {
   background: var(--primary);
   color: white;
@@ -105,7 +110,7 @@ body {
   padding: 8px 15px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition: 0.3s;
 }
 
 .button:hover {
@@ -113,35 +118,29 @@ body {
   transform: translateY(-1px);
 }
 
-/* ================== TABLE (SCROLLABLE + STICKY HEADER) ================== */
+/* ================== TABLE ================== */
 .table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
+  width: 95%;
   margin: 20px auto;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   background: var(--card-bg);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
 }
 
 .table-wrapper table {
   width: 100%;
-  min-width: 950px;
   border-collapse: collapse;
-  white-space: nowrap;
-  border-radius: var(--border-radius);
-  overflow: hidden;
+  min-width: 950px;
 }
 
 .table-wrapper th {
-  position: sticky;
-  top: 0;
   background: var(--primary);
   color: white;
   text-align: left;
   padding: 12px;
-  font-weight: 600;
+  position: sticky;
+  top: 0;
 }
 
 .table-wrapper td {
@@ -149,42 +148,26 @@ body {
   border-bottom: 1px solid #eee;
 }
 
-.table-wrapper tr:nth-child(even) {
-  background: rgba(0, 0, 0, 0.02);
+tbody tr:hover {
+  background: rgba(78, 115, 223, 0.07);
 }
 
 .edit-btn,
 .delete-btn {
-  padding: 5px 10px;
   border: none;
   border-radius: 5px;
+  color: white;
   cursor: pointer;
+  padding: 6px 12px;
   font-size: 0.9rem;
-  transition: 0.2s;
 }
 
 .edit-btn {
   background: #1cc88a;
-  color: white;
   margin-right: 5px;
 }
-
 .delete-btn {
   background: #e74a3b;
-  color: white;
-}
-
-tbody tr:hover {
-  background: rgba(78, 115, 223, 0.08);
-}
-
-/* Scrollbar styling */
-.table-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(100, 100, 100, 0.3);
-  border-radius: 4px;
 }
 
 /* ================== MODAL ================== */
@@ -193,12 +176,11 @@ tbody tr:hover {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.55);
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(6px);
-  transition: opacity 0.3s ease-in-out;
+  z-index: 2000;
 }
 
 .modal.active {
@@ -208,13 +190,13 @@ tbody tr:hover {
 .modal-card {
   background: var(--card-bg);
   border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
   padding: 25px 30px;
-  width: 95%;
-  max-width: 480px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.3s ease forwards;
   transform: translateY(40px);
   opacity: 0;
-  animation: fadeInUp 0.3s ease forwards;
 }
 
 @keyframes fadeInUp {
@@ -228,24 +210,22 @@ tbody tr:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .modal-header h2 {
-  font-size: 1.3rem;
-  font-weight: 700;
   color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 1.3rem;
+  color: #888;
   cursor: pointer;
-  color: #999;
-  transition: color 0.2s;
 }
-
 .close-btn:hover {
   color: #333;
 }
@@ -255,8 +235,8 @@ tbody tr:hover {
   background: var(--background);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .form-grid {
@@ -272,9 +252,8 @@ tbody tr:hover {
 
 .form-field label {
   font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text);
   margin-bottom: 6px;
+  font-size: 0.9rem;
 }
 
 .form-field input {
@@ -313,20 +292,19 @@ tbody tr:hover {
 
 .save-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(78, 115, 223, 0.35);
+  box-shadow: 0 5px 12px rgba(78, 115, 223, 0.3);
 }
 
 .cancel-btn {
   background: #ccc;
+  color: #333;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  color: #333;
   transition: background 0.2s;
 }
-
 .cancel-btn:hover {
   background: #bbb;
 }
@@ -334,28 +312,18 @@ tbody tr:hover {
 /* ================== FOOTER ================== */
 footer {
   text-align: center;
-  padding: 15px;
-  margin-top: 40px;
   font-size: 0.9rem;
   color: #777;
+  padding: 15px;
+  margin-top: 40px;
 }
 
-/* ================== RESPONSIVENESS ================== */
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
-  .navbar nav {
-    width: 100%;
-    justify-content: space-around;
-  }
-
   .controls-bar {
     flex-direction: column;
     align-items: stretch;
-    width: 94%;
     gap: 10px;
-  }
-
-  .table-wrapper table {
-    min-width: 850px;
   }
 
   .form-grid {
