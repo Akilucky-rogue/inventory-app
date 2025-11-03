@@ -254,6 +254,26 @@ body {
   background: #e74a3b;
   color: white;
 }
+table {
+  border-collapse: separate;
+  border-spacing: 0 6px;
+}
+
+tbody tr {
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+td {
+  border-top: 1px solid #eee;
+  padding: 14px 10px;
+}
+
+tbody tr:hover {
+  background: rgba(78, 115, 223, 0.05);
+}
+
 
 /* ================== RESPONSIVE TABLE ================== */
 @media (max-width: 768px) {
@@ -271,107 +291,140 @@ body {
     font-size: 0.9rem;
   }
 }
-/* ================== FIXED MODAL OVERLAY ================== */
+/* ================== MODAL (UPGRADED UI) ================== */
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.55);
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .modal.active {
-  display: flex; /* Show modal when active */
+  display: flex;
 }
 
 .modal-card {
   background: var(--card-bg);
-  color: var(--text);
-  padding: 25px;
-  border-radius: 12px;
-  width: 90%;
+  border-radius: 16px;
+  padding: 25px 30px;
+  width: 95%;
   max-width: 480px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  animation: popUp 0.25s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.3s ease forwards;
 }
 
-@keyframes popUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+@keyframes fadeInUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .modal-header h2 {
   font-size: 1.3rem;
+  font-weight: 700;
   color: var(--primary);
-  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
-  color: #888;
+  font-size: 1.3rem;
   cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .modal-body .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-inline {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.modal-body label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.modal-body input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.modal-body input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
 }
 
 .modal-footer {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.cancel-btn {
-  background: #ccc;
-  color: #333;
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+  gap: 12px;
 }
 
 .save-btn {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
 }
-
-.cancel-btn:hover {
-  background: #bbb;
-}
-
 .save-btn:hover {
   background: var(--primary-dark);
 }
 
-/* Prevent background scroll when modal is open */
+.cancel-btn {
+  background: #ccc;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  transition: background 0.2s;
+}
+.cancel-btn:hover {
+  background: #bbb;
+}
+
+/* Dim background when modal is open */
 body.modal-open {
   overflow: hidden;
 }
