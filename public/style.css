@@ -428,3 +428,80 @@ tbody tr:hover {
 body.modal-open {
   overflow: hidden;
 }
+
+/* ================== FORM CARD (ADD / EDIT ITEM) ================== */
+.form-card {
+  background: var(--background);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.form-field input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-field input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78,115,223,0.15);
+}
+
+/* Card animation */
+.modal-card {
+  transform: translateY(40px);
+  opacity: 0;
+  animation: fadeInModal 0.3s ease forwards;
+}
+
+@keyframes fadeInModal {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Footer buttons alignment */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Mobile-friendly layout */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-card {
+    width: 95%;
+    border-radius: 14px;
+  }
+}
+

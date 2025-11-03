@@ -60,7 +60,7 @@
     </table>
   </div>
 
-  <!-- ===== ADD / EDIT MODAL ===== -->
+  <!-- ===== ADD / EDIT ITEM CARD ===== -->
   <div id="addItemModal" class="modal">
     <div class="modal-card">
       <div class="modal-header">
@@ -69,34 +69,37 @@
       </div>
 
       <div class="modal-body">
-        <div class="form-group">
-          <label>Item Name</label>
-          <input type="text" id="itemName" placeholder="e.g. Nike Shoes" />
-        </div>
+        <div class="form-card">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Item Name</label>
+              <input type="text" id="itemName" placeholder="e.g. Nike Shoes" />
+            </div>
 
-        <div class="form-inline">
-          <div class="form-group" style="flex:1;">
-            <label>Category</label>
-            <input type="text" id="itemCategory" placeholder="e.g. Footwear" />
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>Subcategory</label>
-            <input type="text" id="itemSubcategory" placeholder="e.g. Sports" />
-          </div>
-        </div>
+            <div class="form-field">
+              <label>Category</label>
+              <input type="text" id="itemCategory" placeholder="e.g. Footwear" />
+            </div>
 
-        <div class="form-inline">
-          <div class="form-group" style="flex:1;">
-            <label>Quantity</label>
-            <input type="number" id="itemQuantity" placeholder="e.g. 20" />
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>Buy Price (₹)</label>
-            <input type="number" id="itemBuyPrice" placeholder="e.g. 1500" />
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>Sell Price (₹)</label>
-            <input type="number" id="itemSellPrice" placeholder="e.g. 2500" />
+            <div class="form-field">
+              <label>Subcategory</label>
+              <input type="text" id="itemSubcategory" placeholder="e.g. Sports" />
+            </div>
+
+            <div class="form-field">
+              <label>Quantity</label>
+              <input type="number" id="itemQuantity" placeholder="e.g. 20" />
+            </div>
+
+            <div class="form-field">
+              <label>Buy Price (₹)</label>
+              <input type="number" id="itemBuyPrice" placeholder="e.g. 1500" />
+            </div>
+
+            <div class="form-field">
+              <label>Sell Price (₹)</label>
+              <input type="number" id="itemSellPrice" placeholder="e.g. 2500" />
+            </div>
           </div>
         </div>
       </div>
