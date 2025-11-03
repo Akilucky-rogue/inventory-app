@@ -383,3 +383,47 @@ footer {
     padding: 10px;
   }
 }
+/* ================== TABLE SCROLL FIX ================== */
+.table-container {
+  width: 95%;
+  margin: 20px auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+.table-container table {
+  width: 100%;
+  min-width: 850px; /* ensures horizontal scrolling activates on small screens */
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap; /* prevents text from breaking into multiple lines */
+}
+
+/* Mobile Adjustment */
+@media (max-width: 768px) {
+  .table-container {
+    width: 100%;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+}
