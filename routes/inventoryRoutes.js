@@ -1,66 +1,50 @@
-const express = require('express');
+import express from "express";
+import * as inventoryModel from "../models/inventoryModel.js";
+
 const router = express.Router();
-const Model = require('../models/inventoryModel');
 
-router.get('/', async (req, res) => {
+// Get all items
+router.get("/", async (req, res) => {
   try {
-    const items = await Model.getAllItems();
-    res.json(items);
+    const [rows] = await inventoryModel.getAllItems();
+    res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.get('/stats', async (req, res) => {
+// Add new item
+router.post("/", async (req, res) => {
   try {
-    const stats = await Model.getStats();
-    res.json(stats);
+    const { name, category, quantity, price } = req.body;
+    const result = await inventoryModel.addItem({ name, category, quantity, price });
+    res.status(201).json({ id: result.insertId, name, category, quantity, price });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.get('/:id', async (req, res) => {
+// Update item
+router.put("/:id", async (req, res) => {
   try {
-    const item = await Model.getItemById(req.params.id);
-    res.json(item);
+    const { id } = req.params;
+    const { name, category, quantity, price } = req.body;
+    await inventoryModel.updateItem(id, { name, category, quantity, price });
+    res.json({ message: "Item updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/', async (req, res) => {
+// Delete item
+router.delete("/:id", async (req, res) => {
   try {
-    const { name, quantity, price, category } = req.body;
-    if (!name) return res.status(400).json({ error: 'Name is required' });
-    const { insertId } = await Model.createItem({ name, quantity, price, category });
-    const newItem = await Model.getItemById(insertId);
-    res.status(201).json(newItem);
+    const { id } = req.params;
+    await inventoryModel.deleteItem(id);
+    res.json({ message: "Item deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.put('/:id', async (req, res) => {
-  try {
-    const { name, quantity, price, category } = req.body;
-    await Model.updateItem(req.params.id, { name, quantity, price, category });
-    const updated = await Model.getItemById(req.params.id);
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    await Model.deleteItem(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-module.exports = router;
+export default router;
