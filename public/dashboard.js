@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* ---------------- FIREBASE CONFIG ---------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyDUyAtthz_nd5Np9pSPJzrAR-5ZVJ6Q7bY",
   authDomain: "inventory-system-a1b52.firebaseapp.com",
@@ -15,62 +16,93 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /* ---------------- ELEMENTS ---------------- */
-const totalItems = document.getElementById("totalItems");
-const totalValue = document.getElementById("totalValue");
-const totalProfit = document.getElementById("totalProfit");
-const categoryChart = document.getElementById("categoryChart");
+const totalItemsEl = document.getElementById("totalItems");
+const totalValueEl = document.getElementById("totalValue");
+const totalProfitEl = document.getElementById("totalProfit");
 
-/* ---------------- FETCH LIVE DATA ---------------- */
+/* ---------------- FETCH DATA ---------------- */
 const itemsRef = ref(db, "items");
 
 onValue(itemsRef, (snapshot) => {
-  if (!snapshot.exists()) {
-    totalItems.textContent = "0";
-    totalValue.textContent = "₹0";
-    totalProfit.textContent = "₹0";
-    return;
+  if (snapshot.exists()) {
+    const data = Object.values(snapshot.val());
+
+    const totalItems = data.length;
+    const totalValue = data.reduce(
+      (acc, item) => acc + (item.sellPrice || 0) * (item.quantity || 0),
+      0
+    );
+    const totalProfit = data.reduce(
+      (acc, item) =>
+        acc + ((item.sellPrice || 0) - (item.buyPrice || 0)) * (item.quantity || 0),
+      0
+    );
+
+    totalItemsEl.textContent = totalItems;
+    totalValueEl.textContent = `₹${totalValue.toLocaleString()}`;
+    totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
+
+    renderCategoryChart(data);
+  } else {
+    totalItemsEl.textContent = "0";
+    totalValueEl.textContent = "₹0";
+    totalProfitEl.textContent = "₹0";
   }
+});
 
-  const data = Object.values(snapshot.val());
+/* ---------------- RENDER CATEGORY CHART ---------------- */
+function renderCategoryChart(data) {
+  const ctx = document.getElementById("categoryChart").getContext("2d");
 
-  const totalItemsCount = data.length;
-
-  const totalValueAmount = data.reduce(
-    (sum, i) => sum + (i.sellPrice * i.quantity || 0),
-    0
+  const categories = [...new Set(data.map((item) => item.category))];
+  const quantities = categories.map(
+    (cat) =>
+      data
+        .filter((item) => item.category === cat)
+        .reduce((sum, i) => sum + (i.quantity || 0), 0)
   );
 
-  const totalProfitAmount = data.reduce(
-    (sum, i) => sum + ((i.sellPrice - i.buyPrice) * i.quantity || 0),
-    0
-  );
-
-  totalItems.textContent = totalItemsCount;
-  totalValue.textContent = `₹${totalValueAmount.toLocaleString()}`;
-  totalProfit.textContent = `₹${totalProfitAmount.toLocaleString()}`;
-
-  // Category Distribution Chart
-  const ctx = categoryChart.getContext("2d");
-  const categories = [...new Set(data.map((i) => i.category))];
-  const categoryCounts = categories.map(
-    (cat) => data.filter((i) => i.category === cat).length
-  );
-
-  if (window.categoryPieChart) window.categoryPieChart.destroy();
-  window.categoryPieChart = new Chart(ctx, {
-    type: "doughnut",
+  new Chart(ctx, {
+    type: "pie",
     data: {
       labels: categories,
       datasets: [
         {
-          data: categoryCounts,
-          backgroundColor: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+          label: "Category Stock Distribution",
+          data: quantities,
+          borderWidth: 1,
         },
       ],
     },
     options: {
       responsive: true,
-      plugins: { legend: { position: "bottom" } },
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+      },
     },
   });
+}
+
+/* ---------------- THEME TOGGLE ---------------- */
+const themeToggle = document.getElementById("themeToggle");
+const body = document.body;
+
+if (localStorage.getItem("theme") === "dark") {
+  body.setAttribute("data-theme", "dark");
+  themeToggle.textContent = "☀️";
+}
+
+themeToggle?.addEventListener("click", () => {
+  const current = body.getAttribute("data-theme");
+  if (current === "dark") {
+    body.removeAttribute("data-theme");
+    localStorage.setItem("theme", "light");
+    themeToggle.textContent = "🌙";
+  } else {
+    body.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+    themeToggle.textContent = "☀️";
+  }
 });

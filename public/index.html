@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>InventoryPro Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="https://img.icons8.com/3d-fluency/94/box.png" />
 </head>
 
 <body>
-  <!-- ================= NAVBAR ================= -->
+  <!-- ===== NAVBAR ===== -->
   <header class="navbar">
     <div class="logo">📦 InventoryPro</div>
     <nav>
@@ -19,51 +18,40 @@
     <button id="themeToggle" class="theme-toggle">🌙</button>
   </header>
 
-  <!-- ================= DASHBOARD SECTION ================= -->
+  <!-- ===== DASHBOARD SECTION ===== -->
   <section class="dashboard">
-    <h1>Welcome to <span style="color: var(--primary)">InventoryPro</span></h1>
-    <p style="margin-bottom: 25px; color: #666; font-size: 1rem;">
-      Track your inventory efficiently — overview your stock, profit margins, and category insights at a glance.
-    </p>
+    <h1>📊 Welcome to InventoryPro</h1>
 
     <div class="stat-cards">
       <div class="stat-card">
         <h3>Total Items</h3>
         <p id="totalItems">0</p>
       </div>
-
-      <div class="stat-card">
-        <h3>Total Quantity</h3>
-        <p id="totalQuantity">0</p>
-      </div>
-
       <div class="stat-card">
         <h3>Total Value (₹)</h3>
-        <p id="totalValue">₹0</p>
+        <p id="totalValue">0</p>
       </div>
-
       <div class="stat-card">
-        <h3>Estimated Profit (₹)</h3>
-        <p id="totalProfit">₹0</p>
+        <h3>Total Profit (₹)</h3>
+        <p id="totalProfit">0</p>
       </div>
     </div>
 
-    <!-- ================= CHART ================= -->
     <div class="chart-container">
       <canvas id="categoryChart"></canvas>
     </div>
 
     <a href="inventory.html">
-      <button class="manage-btn">📊 Manage Inventory</button>
+      <button class="manage-btn">🧾 Manage Inventory</button>
     </a>
   </section>
 
-  <!-- ================= FOOTER ================= -->
+  <!-- ===== FOOTER ===== -->
   <footer>
-    <p>© 2025 InventoryPro | Built by <strong>Akshat 💻</strong></p>
+    <p>© 2025 InventoryPro | Built by Akshat 💻</p>
   </footer>
 
-  <!-- ================= SCRIPTS ================= -->
+  <!-- ===== SCRIPTS ===== -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="dashboard.js"></script>
 </body>

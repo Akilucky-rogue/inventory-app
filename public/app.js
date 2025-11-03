@@ -87,18 +87,18 @@ function updateDisplay() {
   }
 
   if (query) {
-    filteredItems = filteredItems.filter((i) =>
-      i.name.toLowerCase().includes(query)
+    filteredItems = filteredItems.filter(
+      (i) =>
+        i.name.toLowerCase().includes(query) ||
+        i.category.toLowerCase().includes(query) ||
+        i.subcategory?.toLowerCase().includes(query)
     );
   }
 
   if (sortBy === "name") filteredItems.sort((a, b) => a.name.localeCompare(b.name));
   if (sortBy === "quantity") filteredItems.sort((a, b) => b.quantity - a.quantity);
-  if (sortBy === "margin")
-    filteredItems.sort(
-      (a, b) =>
-        b.sellPrice - b.buyPrice - (a.sellPrice - a.buyPrice)
-    );
+  if (sortBy === "price")
+    filteredItems.sort((a, b) => b.sellPrice - a.sellPrice);
 
   renderTable(filteredItems);
 }
@@ -115,15 +115,18 @@ function clearFilters() {
 function renderTable(data) {
   tbody.innerHTML = "";
   if (!data.length) {
-    tbody.innerHTML =
-      `<tr><td colspan="8" style="text-align:center;opacity:.6;">No items found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;opacity:.6;">No items found</td></tr>`;
     return;
   }
 
   data.forEach((i) => {
-    const profitMargin = i.sellPrice && i.buyPrice
-      ? (i.sellPrice - i.buyPrice).toFixed(2)
-      : 0;
+    const profitMargin =
+      i.sellPrice && i.buyPrice
+        ? (i.sellPrice - i.buyPrice).toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+          })
+        : "₹0";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -133,7 +136,7 @@ function renderTable(data) {
       <td>${i.quantity}</td>
       <td>₹${i.buyPrice?.toLocaleString() || 0}</td>
       <td>₹${i.sellPrice?.toLocaleString() || 0}</td>
-      <td>₹${profitMargin}</td>
+      <td>${profitMargin}</td>
       <td>
         <button class="edit-btn" data-id="${i.id}">✏️ Edit</button>
         <button class="delete-btn" data-id="${i.id}">🗑 Delete</button>
@@ -160,7 +163,7 @@ function renderTable(data) {
   });
 }
 
-/* ---------------- ADD / EDIT ITEM ---------------- */
+/* ---------------- MODAL HANDLING ---------------- */
 addItemBtn?.addEventListener("click", () => openAddModal());
 closeModalBtn?.addEventListener("click", closeModal);
 cancelBtn?.addEventListener("click", closeModal);
@@ -171,9 +174,8 @@ window.addEventListener("click", (e) => {
 function openAddModal() {
   editMode = false;
   clearModalInputs();
-  document.getElementById("modalTitle").textContent = "🪄 Add Item";
-  saveItemBtn.textContent = "Save Item";
-  modal.style.display = "flex";
+  modal.classList.add("active");
+  document.body.classList.add("modal-open");
 }
 
 function openEditModal(item) {
@@ -187,13 +189,13 @@ function openEditModal(item) {
   buyPriceInput.value = item.buyPrice || "";
   sellPriceInput.value = item.sellPrice || "";
 
-  document.getElementById("modalTitle").textContent = "✏️ Edit Item";
-  saveItemBtn.textContent = "Update Item";
-  modal.style.display = "flex";
+  modal.classList.add("active");
+  document.body.classList.add("modal-open");
 }
 
 function closeModal() {
-  modal.style.display = "none";
+  modal.classList.remove("active");
+  document.body.classList.remove("modal-open");
   clearModalInputs();
   editMode = false;
   editItemId = null;
@@ -274,6 +276,7 @@ themeToggle?.addEventListener("click", () => {
     themeToggle.textContent = "☀️";
   }
 });
+
 /* ---------------- IMPORT STOCKS (CSV UPLOAD) ---------------- */
 const importBtn = document.getElementById("importBtn");
 const importFile = document.getElementById("importFile");
@@ -306,11 +309,8 @@ importFile?.addEventListener("change", async (event) => {
       "sellprice",
     ];
 
-    // Validate header structure
     if (!expectedHeaders.every((h) => headers.includes(h))) {
-      alert(
-        "⚠️ Invalid CSV format.\nHeaders must be: name, category, subcategory, quantity, buyprice, sellprice"
-      );
+      alert("⚠️ Invalid CSV format.\nHeaders must be: name, category, subcategory, quantity, buyprice, sellprice");
       return;
     }
 
@@ -329,20 +329,14 @@ importFile?.addEventListener("change", async (event) => {
 
     let validCount = 0;
     for (const item of newItems) {
-      if (
-        item.name &&
-        item.category &&
-        item.quantity &&
-        item.buyPrice &&
-        item.sellPrice
-      ) {
+      if (item.name && item.category && item.quantity && item.buyPrice && item.sellPrice) {
         await set(ref(db, `items/${item.id}`), item);
         validCount++;
       }
     }
 
     alert(`✅ Successfully imported ${validCount} items!`);
-    importFile.value = ""; // reset input
+    importFile.value = "";
   };
 
   reader.readAsText(file);
@@ -356,15 +350,7 @@ exportBtn?.addEventListener("click", () => {
     return;
   }
 
-  const headers = [
-    "Name",
-    "Category",
-    "Subcategory",
-    "Quantity",
-    "BuyPrice",
-    "SellPrice",
-  ];
-
+  const headers = ["Name", "Category", "Subcategory", "Quantity", "BuyPrice", "SellPrice"];
   const csvRows = [headers.join(",")];
 
   items.forEach((i) => {
@@ -383,8 +369,6 @@ exportBtn?.addEventListener("click", () => {
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = `inventory_export_${new Date()
-    .toISOString()
-    .slice(0, 10)}.csv`;
+  link.download = `inventory_export_${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
 });
