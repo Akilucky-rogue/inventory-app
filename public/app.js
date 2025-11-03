@@ -372,3 +372,14 @@ exportBtn?.addEventListener("click", () => {
   link.download = `inventory_export_${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
 });
+addItemBtn?.addEventListener("click", () => {
+  modal.classList.add("active");
+});
+
+closeModalBtn?.addEventListener("click", () => {
+  modal.classList.remove("active");
+});
+
+cancelBtn?.addEventListener("click", () => {
+  modal.classList.remove("active");
+});
