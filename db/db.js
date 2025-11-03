@@ -1,19 +1,16 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import mysql from "mysql2/promise";
+import dotenv from "dotenv";
+dotenv.config();
 
-async function getPool() {
-  const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    ssl: { rejectUnauthorized: true } // required for cloud MySQL like PlanetScale
-  });
-  return pool;
-}
+console.log("Loaded MySQL env:", process.env.MYSQLHOST);
 
-module.exports = { getPool };
+const pool = mysql.createPool({
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT || 3306,
+  connectTimeout: 10000
+});
+
+export default pool;

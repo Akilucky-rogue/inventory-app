@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Inventory</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Inventory Management</h1>
+    <style>
+    body {
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+      }
+    body.loaded {
+        opacity: 1;
+      }
+    </style>
+    <script>
+      window.addEventListener("load", () => {
+      document.body.classList.add("loaded");
+      });
+    </script>
+    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+  </header>
+
+  <main>
+    <div class="form-container">
+      <input type="text" id="name" placeholder="Item Name" />
+      <input type="text" id="category" placeholder="Category" />
+      <input type="number" id="quantity" placeholder="Quantity" />
+      <input type="number" id="price" placeholder="Price (₹)" />
+      <button type="button" onclick="addItem()">Add Item</button>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchBar" placeholder="🔍 Search items..." />
+      <select id="sortBy">
+        <option value="name">Sort by Name</option>
+        <option value="quantity">Sort by Quantity</option>
+        <option value="price">Sort by Price</option>
+      </select>
+    </div>
+
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Quantity</th>
+          <th>Price (₹)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <footer>
+      <a href="index.html" class="button">⬅ Back to Dashboard</a>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
