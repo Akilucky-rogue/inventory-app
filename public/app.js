@@ -1,4 +1,3 @@
-// ---------------- FIREBASE IMPORTS ----------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getDatabase,
@@ -6,6 +5,7 @@ import {
   onValue,
   remove,
   set,
+  update,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* ---------------- FIREBASE CONFIG ---------------- */
@@ -17,18 +17,18 @@ const firebaseConfig = {
   storageBucket: "inventory-system-a1b52.firebasestorage.app",
   messagingSenderId: "43674559309",
   appId: "1:43674559309:web:1f35ca3791bda0152a8d04",
-  measurementId: "G-KPJ75HYDT0",
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ---------------- GLOBAL VARIABLES ---------------- */
+/* ---------------- GLOBALS ---------------- */
 let items = [];
 let filteredItems = [];
+let editMode = false;
+let editItemId = null;
 
-/* ---------------- DOM ELEMENTS ---------------- */
+/* ---------------- ELEMENTS ---------------- */
 const tbody = document.querySelector("tbody");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
@@ -41,11 +41,12 @@ const addItemBtn = document.getElementById("addItemBtn");
 const saveItemBtn = document.getElementById("saveItemBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelBtn = document.getElementById("cancelBtn");
-
 const nameInput = document.getElementById("itemName");
 const categoryInput = document.getElementById("itemCategory");
+const subcategoryInput = document.getElementById("itemSubcategory");
 const qtyInput = document.getElementById("itemQuantity");
-const priceInput = document.getElementById("itemPrice");
+const buyPriceInput = document.getElementById("itemBuyPrice");
+const sellPriceInput = document.getElementById("itemSellPrice");
 
 /* ---------------- FETCH LIVE DATA ---------------- */
 const itemsRef = ref(db, "items");
@@ -57,13 +58,13 @@ onValue(itemsRef, (snapshot) => {
     populateCategoryFilter(items);
     renderTable(items);
   } else {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; opacity:0.7;">No items found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No items found</td></tr>`;
   }
 });
 
 /* ---------------- POPULATE CATEGORY FILTER ---------------- */
 function populateCategoryFilter(data) {
-  const categories = [...new Set(data.map((i) => i.category || "Uncategorized"))];
+  const categories = [...new Set(data.map((i) => i.category))];
   filterSelect.innerHTML = `<option value="all">All Categories</option>`;
   categories.forEach((cat) => {
     const opt = document.createElement("option");
@@ -75,28 +76,29 @@ function populateCategoryFilter(data) {
 
 /* ---------------- FILTER, SORT, SEARCH ---------------- */
 function updateDisplay() {
-  const query = searchInput?.value?.toLowerCase() || "";
-  const sortBy = sortSelect?.value;
-  const cat = filterSelect?.value;
+  let query = searchInput?.value?.toLowerCase() || "";
+  let sortBy = sortSelect?.value;
+  let cat = filterSelect?.value;
 
   filteredItems = [...items];
 
-  // Filter by category
   if (cat && cat !== "all") {
     filteredItems = filteredItems.filter((i) => i.category === cat);
   }
 
-  // Search by name
   if (query) {
     filteredItems = filteredItems.filter((i) =>
       i.name.toLowerCase().includes(query)
     );
   }
 
-  // Sort
   if (sortBy === "name") filteredItems.sort((a, b) => a.name.localeCompare(b.name));
   if (sortBy === "quantity") filteredItems.sort((a, b) => b.quantity - a.quantity);
-  if (sortBy === "price") filteredItems.sort((a, b) => b.price - a.price);
+  if (sortBy === "margin")
+    filteredItems.sort(
+      (a, b) =>
+        b.sellPrice - b.buyPrice - (a.sellPrice - a.buyPrice)
+    );
 
   renderTable(filteredItems);
 }
@@ -113,23 +115,33 @@ function clearFilters() {
 function renderTable(data) {
   tbody.innerHTML = "";
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; opacity:.6;">No items found</td></tr>`;
+    tbody.innerHTML =
+      `<tr><td colspan="8" style="text-align:center;opacity:.6;">No items found</td></tr>`;
     return;
   }
 
   data.forEach((i) => {
+    const profitMargin = i.sellPrice && i.buyPrice
+      ? (i.sellPrice - i.buyPrice).toFixed(2)
+      : 0;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${i.name}</td>
       <td>${i.category}</td>
+      <td>${i.subcategory || "-"}</td>
       <td>${i.quantity}</td>
-      <td>₹${i.price.toLocaleString()}</td>
-      <td><button class="delete-btn" data-id="${i.id}">🗑️ Delete</button></td>
+      <td>₹${i.buyPrice?.toLocaleString() || 0}</td>
+      <td>₹${i.sellPrice?.toLocaleString() || 0}</td>
+      <td>₹${profitMargin}</td>
+      <td>
+        <button class="edit-btn" data-id="${i.id}">✏️ Edit</button>
+        <button class="delete-btn" data-id="${i.id}">🗑 Delete</button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Delete item event listener
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       const id = e.target.dataset.id;
@@ -138,103 +150,118 @@ function renderTable(data) {
       }
     });
   });
+
+  document.querySelectorAll(".edit-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.target.dataset.id;
+      const item = items.find((it) => it.id === id);
+      if (item) openEditModal(item);
+    });
+  });
 }
 
-/* ---------------- ADD NEW ITEM ---------------- */
-addItemBtn?.addEventListener("click", () => {
-  modal.style.display = "flex";
-});
-
+/* ---------------- ADD / EDIT ITEM ---------------- */
+addItemBtn?.addEventListener("click", () => openAddModal());
 closeModalBtn?.addEventListener("click", closeModal);
 cancelBtn?.addEventListener("click", closeModal);
-
 window.addEventListener("click", (e) => {
   if (e.target === modal) closeModal();
 });
 
+function openAddModal() {
+  editMode = false;
+  clearModalInputs();
+  document.getElementById("modalTitle").textContent = "🪄 Add Item";
+  saveItemBtn.textContent = "Save Item";
+  modal.style.display = "flex";
+}
+
+function openEditModal(item) {
+  editMode = true;
+  editItemId = item.id;
+
+  nameInput.value = item.name;
+  categoryInput.value = item.category;
+  subcategoryInput.value = item.subcategory || "";
+  qtyInput.value = item.quantity;
+  buyPriceInput.value = item.buyPrice || "";
+  sellPriceInput.value = item.sellPrice || "";
+
+  document.getElementById("modalTitle").textContent = "✏️ Edit Item";
+  saveItemBtn.textContent = "Update Item";
+  modal.style.display = "flex";
+}
+
 function closeModal() {
   modal.style.display = "none";
   clearModalInputs();
+  editMode = false;
+  editItemId = null;
 }
-
-saveItemBtn?.addEventListener("click", async () => {
-  const name = nameInput.value.trim();
-  const category = categoryInput.value.trim() || "Uncategorized";
-  const quantity = Number(qtyInput.value) || 0;
-  const price = Number(priceInput.value) || 0;
-
-  if (!name || quantity <= 0 || price <= 0) {
-    alert("⚠️ Please fill all fields correctly — no empty or zero values.");
-    return;
-  }
-
-  const id = Date.now().toString();
-  const newItem = { id, name, category, quantity, price };
-
-  await set(ref(db, "items/" + id), newItem);
-  modal.style.display = "none";
-  clearModalInputs();
-});
 
 function clearModalInputs() {
   nameInput.value = "";
   categoryInput.value = "";
+  subcategoryInput.value = "";
   qtyInput.value = "";
-  priceInput.value = "";
+  buyPriceInput.value = "";
+  sellPriceInput.value = "";
 }
 
-/* ---------------- EVENT LISTENERS ---------------- */
+saveItemBtn?.addEventListener("click", async () => {
+  const name = nameInput.value.trim();
+  const category = categoryInput.value.trim();
+  const subcategory = subcategoryInput.value.trim();
+  const quantity = parseInt(qtyInput.value);
+  const buyPrice = parseFloat(buyPriceInput.value);
+  const sellPrice = parseFloat(sellPriceInput.value);
+
+  if (!name || !category || !quantity || !buyPrice || !sellPrice) {
+    alert("Please fill all fields properly!");
+    return;
+  }
+
+  if (editMode && editItemId) {
+    await update(ref(db, `items/${editItemId}`), {
+      name,
+      category,
+      subcategory,
+      quantity,
+      buyPrice,
+      sellPrice,
+    });
+    alert("✅ Item updated successfully!");
+  } else {
+    const id = Date.now().toString();
+    const newItem = {
+      id,
+      name,
+      category,
+      subcategory,
+      quantity,
+      buyPrice,
+      sellPrice,
+    };
+    await set(ref(db, "items/" + id), newItem);
+    alert("✅ Item added successfully!");
+  }
+
+  closeModal();
+});
+
+/* ---------------- SEARCH / SORT / FILTER EVENTS ---------------- */
 searchInput?.addEventListener("input", updateDisplay);
 sortSelect?.addEventListener("change", updateDisplay);
 filterSelect?.addEventListener("change", updateDisplay);
 clearFiltersBtn?.addEventListener("click", clearFilters);
 
-/* ---------------- EXPORT INVENTORY ---------------- */
-const exportBtn = document.getElementById("exportBtn");
-
-exportBtn?.addEventListener("click", () => {
-  if (!items.length) {
-    alert("⚠️ No items available to export!");
-    return;
-  }
-
-  // Convert JSON to CSV
-  const headers = ["Name", "Category", "Quantity", "Price (₹)"];
-  const csvRows = [headers.join(",")];
-
-  items.forEach((item) => {
-    const row = [
-      `"${item.name}"`,
-      `"${item.category}"`,
-      item.quantity,
-      item.price,
-    ];
-    csvRows.push(row.join(","));
-  });
-
-  const csvContent = csvRows.join("\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  // Create a hidden download link
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "inventory-data.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
-
-
 /* ---------------- THEME TOGGLE ---------------- */
 const themeToggle = document.getElementById("themeToggle");
 const body = document.body;
-
 if (localStorage.getItem("theme") === "dark") {
   body.setAttribute("data-theme", "dark");
   themeToggle.textContent = "☀️";
 }
-
 themeToggle?.addEventListener("click", () => {
   const current = body.getAttribute("data-theme");
   if (current === "dark") {
@@ -246,4 +273,118 @@ themeToggle?.addEventListener("click", () => {
     localStorage.setItem("theme", "dark");
     themeToggle.textContent = "☀️";
   }
+});
+/* ---------------- IMPORT STOCKS (CSV UPLOAD) ---------------- */
+const importBtn = document.getElementById("importBtn");
+const importFile = document.getElementById("importFile");
+
+// Trigger file input when clicking import
+importBtn?.addEventListener("click", () => importFile.click());
+
+// Handle CSV upload
+importFile?.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const text = e.target.result;
+    const rows = text.split("\n").map((r) => r.trim()).filter(Boolean);
+
+    if (rows.length < 2) {
+      alert("⚠️ Invalid file. Please upload a valid CSV with headers.");
+      return;
+    }
+
+    const headers = rows[0].split(",").map((h) => h.trim().toLowerCase());
+    const expectedHeaders = [
+      "name",
+      "category",
+      "subcategory",
+      "quantity",
+      "buyprice",
+      "sellprice",
+    ];
+
+    // Validate header structure
+    if (!expectedHeaders.every((h) => headers.includes(h))) {
+      alert(
+        "⚠️ Invalid CSV format.\nHeaders must be: name, category, subcategory, quantity, buyprice, sellprice"
+      );
+      return;
+    }
+
+    const newItems = rows.slice(1).map((row) => {
+      const cols = row.split(",");
+      return {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        name: cols[headers.indexOf("name")]?.trim(),
+        category: cols[headers.indexOf("category")]?.trim(),
+        subcategory: cols[headers.indexOf("subcategory")]?.trim(),
+        quantity: parseInt(cols[headers.indexOf("quantity")]),
+        buyPrice: parseFloat(cols[headers.indexOf("buyprice")]),
+        sellPrice: parseFloat(cols[headers.indexOf("sellprice")]),
+      };
+    });
+
+    let validCount = 0;
+    for (const item of newItems) {
+      if (
+        item.name &&
+        item.category &&
+        item.quantity &&
+        item.buyPrice &&
+        item.sellPrice
+      ) {
+        await set(ref(db, `items/${item.id}`), item);
+        validCount++;
+      }
+    }
+
+    alert(`✅ Successfully imported ${validCount} items!`);
+    importFile.value = ""; // reset input
+  };
+
+  reader.readAsText(file);
+});
+
+/* ---------------- EXPORT INVENTORY TO CSV ---------------- */
+const exportBtn = document.getElementById("exportBtn");
+exportBtn?.addEventListener("click", () => {
+  if (!items.length) {
+    alert("⚠️ No items to export!");
+    return;
+  }
+
+  const headers = [
+    "Name",
+    "Category",
+    "Subcategory",
+    "Quantity",
+    "BuyPrice",
+    "SellPrice",
+  ];
+
+  const csvRows = [headers.join(",")];
+
+  items.forEach((i) => {
+    const row = [
+      `"${i.name}"`,
+      `"${i.category}"`,
+      `"${i.subcategory || ""}"`,
+      i.quantity,
+      i.buyPrice,
+      i.sellPrice,
+    ];
+    csvRows.push(row.join(","));
+  });
+
+  const csvContent = csvRows.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `inventory_export_${new Date()
+    .toISOString()
+    .slice(0, 10)}.csv`;
+  link.click();
 });
