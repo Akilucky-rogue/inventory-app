@@ -279,26 +279,69 @@ footer {
 }
 
 /* ================== RESPONSIVENESS ================== */
-@media (max-width: 768px) {
-  .navbar nav {
+@media (max-width: 900px) {
+  body {
+    font-size: 0.95rem;
+    overflow-x: hidden;
+  }
+
+  .navbar {
     flex-direction: column;
-    gap: 6px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 15px;
+  }
+
+  .navbar nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 0;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.3rem;
   }
 
   .controls-bar {
     flex-direction: column;
     align-items: stretch;
-    width: 90%;
+    width: 94%;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .controls-bar input,
+  .controls-bar select {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .button {
+    flex: 1 1 30%;
+    min-width: 100px;
   }
 
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+    border-radius: 10px;
   }
 
-  .form-inline {
-    flex-direction: column;
+  th, td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
   }
 
   .modal-card {
@@ -307,20 +350,8 @@ footer {
     overflow-y: auto;
   }
 
-  .button {
-    width: 100%;
-  }
-
-  .dashboard {
-    margin: 15px;
-    padding: 15px;
-  }
-
-  .chart-container {
+  footer {
+    font-size: 0.8rem;
     padding: 10px;
-  }
-
-  .stat-card p {
-    font-size: 1.4rem;
   }
 }
