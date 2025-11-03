@@ -3,68 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manage Inventory</title>
+  <title>Inventory Manager</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Inventory Management</h1>
-    <style>
-    body {
-        opacity: 0;
-        transition: opacity 0.4s ease-in-out;
-      }
-    body.loaded {
-        opacity: 1;
-      }
-    </style>
-    <script>
-      window.addEventListener("load", () => {
-      document.body.classList.add("loaded");
-      });
-    </script>
-    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+  <header class="navbar">
+    <div class="logo">📦 InventoryPro</div>
+    <nav>
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="inventory.html" class="nav-link active">Manage</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
   </header>
 
-  <main>
-    <div class="form-container">
-      <input type="text" id="name" placeholder="Item Name" />
-      <input type="text" id="category" placeholder="Category" />
-      <input type="number" id="quantity" placeholder="Quantity" />
-      <input type="number" id="price" placeholder="Price (₹)" />
-      <button type="button" onclick="addItem()">Add Item</button>
+<!-- Add Item Modal -->
+  <div id="addItemModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🪄 Add New Item</h2>
+        <button id="closeModalBtn" class="close-btn">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. Nike Shoes" />
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" id="itemCategory" placeholder="e.g. Footwear" />
+        </div>
+
+        <div class="form-inline">
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="itemQuantity" placeholder="e.g. 20" />
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="itemPrice" placeholder="e.g. 2500" />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="saveItemBtn" class="button save-btn">Save Item</button>
+        <button id="cancelBtn" class="cancel-btn">Cancel</button>
+      </div>
     </div>
+  </div>
 
-    <div class="search-container">
-      <input type="text" id="searchBar" placeholder="🔍 Search items..." />
-      <select id="sortBy">
-        <option value="name">Sort by Name</option>
-        <option value="quantity">Sort by Quantity</option>
-        <option value="price">Sort by Price</option>
-      </select>
-    </div>
+<!-- ===== CONTROL BAR (FINAL CLEAN VERSION) ===== -->
+<div class="controls-bar sleek">
+  <div class="controls-left">
+    <input type="text" id="searchInput" placeholder="🔍 Search by name..." />
+    <select id="sortSelect">
+      <option value="name">Sort by Name</option>
+      <option value="quantity">Sort by Quantity</option>
+      <option value="price">Sort by Price</option>
+    </select>
+    <select id="filterSelect">
+      <option value="all">All Categories</option>
+    </select>
+    <button id="clearFiltersBtn" class="button clear-btn">🧹 Clear</button>
+  </div>
 
-    <table id="itemsTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Quantity</th>
-          <th>Price (₹)</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div class="controls-right">
+    <button id="addItemBtn" class="button add-btn">➕ Add New Item</button>
+    <button id="exportBtn" class="button export-btn">⬇️ Export</button>
+  </div>
+</div>
 
-    <footer>
-      <a href="index.html" class="button">⬅ Back to Dashboard</a>
-    </footer>
-  </main>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <footer>
+    <p>© 2025 InventoryPro | Built by Akshat 💻</p>
+  </footer>
 
   <script type="module" src="app.js"></script>
-  <script src="script.js"></script>
-
 </body>
 </html>

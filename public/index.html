@@ -5,87 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventory Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Inventory Dashboard</h1>
-    <style>
-    body {
-        opacity: 0;
-        transition: opacity 0.4s ease-in-out;
-      }
-    body.loaded {
-        opacity: 1;
-      }
-    </style>
-    <script>
-    window.addEventListener("load", () => {
-      document.body.classList.add("loaded");
-    });
-    </script>
-    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+  <header class="navbar">
+    <div class="logo">📦 InventoryPro</div>
+    <nav>
+      <a href="index.html" class="nav-link active">Dashboard</a>
+      <a href="inventory.html" class="nav-link">Manage</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
   </header>
+  <!-- DASHBOARD CONTROL BAR -->
+   <div class="controls-bar mini-controls">
+    <button onclick="window.location.href='inventory.html'" class="button">📦 Go to Inventory</button>
+    <button id="exportBtnDashboard" class="button export-btn">⬇️ Export Data</button>
+</div>
 
-  <main class="dashboard">
-    <div class="card">
-      <h2>Total Items</h2>
-      <p id="totalItems">0</p>
+
+  <main class="dashboard-container">
+    <!-- STATS GRID -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <h2 id="totalItems">0</h2>
+        <p>Total Items</p>
+      </div>
+      <div class="stat-card">
+        <h2 id="totalQuantity">0</h2>
+        <p>Total Quantity</p>
+      </div>
+      <div class="stat-card">
+        <h2 id="totalValue">₹0</h2>
+        <p>Total Inventory Value</p>
+      </div>
+    </section>
+
+    <!-- CHARTS SECTION -->
+    <section class="charts">
+    <div class="chart-card">
+        <h3>Category Distribution</h3>
+        <canvas id="categoryChart"></canvas>
     </div>
-    <div class="card">
-      <h2>Total Stock Value (₹)</h2>
-      <p id="totalValue">0</p>
-    </div>
-    <div class="card">
-      <h2>Total Categories</h2>
-      <p id="totalCategories">0</p>
-    </div>
-    <div class="card low-stock">
-      <h2>Low Stock Items</h2>
-      <ul id="lowStockList"></ul>
+    </section>
+
+    <!-- LOW STOCK ALERTS -->
+    <section class="low-stock-section">
+    <h3>⚠️ Low Stock Alerts</h3>
+    <ul id="lowStockList">
+        <li class="none">Loading...</li>
+    </ul>
+    </section>
+
+
+    <!-- NAVIGATION -->
+    <div class="nav-buttons">
+      <a href="inventory.html" class="button">📦 Manage Inventory</a>
     </div>
   </main>
 
-  <footer>
-    <a href="inventory.html" class="button">Manage Inventory ➜</a>
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDUyAtthz_nd5Np9pSPJzrAR-5ZVJ6Q7bY",
-        authDomain: "inventory-system-a1b52.firebaseapp.com",
-        databaseURL: "https://inventory-system-a1b52-default-rtdb.firebaseio.com",
-        projectId: "inventory-system-a1b52",
-        storageBucket: "inventory-system-a1b52.firebasestorage.app",
-        messagingSenderId: "43674559309",
-        appId: "1:43674559309:web:1f35ca3791bda0152a8d04",
-        measurementId: "G-KPJ75HYDT0"
-        };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const itemsRef = ref(db, "items");
-
-    onValue(itemsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      const items = Object.values(data);
-      document.getElementById("totalItems").innerText = items.length;
-
-      const totalValue = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      document.getElementById("totalValue").innerText = totalValue.toLocaleString();
-
-      const categories = [...new Set(items.map(i => i.category))];
-      document.getElementById("totalCategories").innerText = categories.length;
-
-      const lowStock = items.filter(i => i.quantity < 10);
-      const list = document.getElementById("lowStockList");
-      list.innerHTML = lowStock.length ? lowStock.map(i => `<li>${i.name} (${i.quantity})</li>`).join("") : "<li>All stocked ✅</li>";
+  <script type="module" src="dashboard.js"></script>
+  <script>
+    document.getElementById("exportBtnDashboard")?.addEventListener("click", () => {
+        window.location.href = "inventory.html";
+        alert("ℹ️ Export is available on the Inventory page.");
     });
   </script>
-  <script src="script.js"></script>
+
 </body>
+<footer>
+  <p>© 2025 InventoryPro | Built by Akshat 💻</p>
+</footer>
 </html>
