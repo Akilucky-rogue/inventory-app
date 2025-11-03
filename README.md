@@ -1,9 +1,3 @@
-Absolutely, Akshat 💎 — here’s your **complete and final professional `README.md` Markdown code**, formatted for GitHub (you can copy–paste it directly into your repo’s `README.md` file).
-
-It’s fully styled, badge-rich, and designed to make your project look like a production-ready SaaS dashboard.
-
----
-
 ````markdown
 <h1 align="center">📦 InventoryPro</h1>
 <p align="center">
