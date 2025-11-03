@@ -427,3 +427,56 @@ th, td {
     font-size: 0.9rem;
   }
 }
+/* ================== TABLE MOBILE FIX (FINAL) ================== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin: 10px auto;
+}
+
+.table-wrapper table {
+  width: 100%;
+  min-width: 900px; /* force horizontal scroll on smaller screens */
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.3);
+  border-radius: 4px;
+}
+
+th, td {
+  white-space: nowrap;
+  text-align: left;
+  padding: 10px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .table-wrapper {
+    width: 100%;
+    padding-bottom: 10px;
+  }
+
+  table {
+    min-width: 900px;
+  }
+
+  .controls-bar,
+  .navbar {
+    width: 100%;
+    overflow-x: hidden;
+  }
+}
